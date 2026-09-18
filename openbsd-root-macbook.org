@@ -1,0 +1,514 @@
+#+TITLE: openbsd root macbook
+#+STARTUP: overview hideblocks
+#+OPTIONS: num:nil author:nil
+#+PROPERTY: header-args :mkdirp yes :noweb yes 
+* tangle dotfiles
+** tangle document
+
+C-c C-v t
+
+** tangle only one code block
+
+C-u C-c C-v t
+
+** tangle from the command line
+
+#+begin_src sh
+emacs --batch -l org --eval '(org-babel-tangle-file "~/git/openbsd/openbsd-root-macbook/openbsd-root-macbook.org")'
+#+end_src
+
+* openbsd root dotfiles
+** /etc
+*** doas
+
+#+begin_example
+/etc/doas
+#+end_example
+
+**** doas config
+
+#+NAME: doas
+#+BEGIN_SRC conf
+permit nopass keepenv setenv { PATH } djwilcox
+#+END_SRC
+
+**** doas tangle
+:PROPERTIES:
+:ORDERED:  t
+:END:
+
+***** root dir
+
+#+NAME: doas-root-dir
+#+BEGIN_SRC conf :tangle "/doas::/etc/doas" :tangle-mode o600
+<<doas>>
+#+END_SRC
+  
+***** current dir
+
+#+NAME: doas-current-dir
+#+BEGIN_SRC conf :tangle "etc/doas" :tangle-mode o600
+<<doas>>
+#+END_SRC
+
+*** fstab
+
+#+begin_example
+/etc/fstab
+#+end_example
+
+**** fstab config
+
+#+NAME: fstab
+#+BEGIN_SRC conf
+6e192b11574e6f52.b none swap sw
+6e192b11574e6f52.a / ffs rw 1 1
+6e192b11574e6f52.l /home ffs rw,nodev,nosuid 1 2
+6e192b11574e6f52.d /tmp ffs rw,nodev,nosuid 1 2
+6e192b11574e6f52.f /usr ffs rw,nodev 1 2
+6e192b11574e6f52.g /usr/X11R6 ffs rw,nodev 1 2
+6e192b11574e6f52.h /usr/local ffs rw,wxallowed,nodev 1 2
+6e192b11574e6f52.k /usr/obj ffs rw,nodev,nosuid 1 2
+6e192b11574e6f52.j /usr/src ffs rw,nodev,nosuid 1 2
+6e192b11574e6f52.e /var ffs rw,nodev,nosuid 1 2
+#+END_SRC
+
+**** fstab tangle
+:PROPERTIES:
+:ORDERED:  t
+:END:
+
+***** root dir
+
+#+NAME: fstab-root-dir
+#+BEGIN_SRC conf :tangle "/doas::/etc/fstab" :tangle-mode o644
+<<fstab>>
+#+END_SRC
+  
+***** current dir
+
+#+NAME: fstab-current-dir
+#+BEGIN_SRC conf :tangle "etc/fstab" :tangle-mode o644
+<<fstab>>
+#+END_SRC
+
+*** login.conf
+
+#+begin_example
+/etc/login.conf
+#+end_example
+
+**** login.conf config
+
+#+NAME: login
+#+BEGIN_SRC conf
+# $OpenBSD: login.conf,v 1.27 2025/07/17 14:44:42 landry Exp $
+
+#
+# Sample login.conf file.  See login.conf(5) for details.
+#
+
+#
+# Standard authentication styles:
+#
+# passwd	Use only the local password file
+# chpass	Do not authenticate, but change user's password (change
+#		the YP password if the user has one, else change the
+#		local password)
+# lchpass	Do not login; change user's local password instead
+# ldap		Use LDAP authentication
+# radius	Use RADIUS authentication
+# reject	Use rejected authentication
+# skey		Use S/Key authentication
+# activ		ActivCard X9.9 token authentication
+# crypto	CRYPTOCard X9.9 token authentication
+# snk		Digital Pathways SecureNet Key authentication
+# token		Generic X9.9 token authentication
+# yubikey	YubiKey authentication
+#
+
+# Default allowed authentication styles
+auth-defaults:auth=passwd,skey:
+
+# Default allowed authentication styles for authentication type ftp
+auth-ftp-defaults:auth-ftp=passwd:
+
+#
+# The default values
+# To alter the default authentication types change the line:
+#	:tc=auth-defaults:\
+# to read something like: (enables passwd, "myauth", and activ)
+#	:auth=passwd,myauth,activ:\
+# Any value changed in the daemon class should be reset in default
+# class.
+#
+default:\
+	:path=/usr/bin /bin /usr/sbin /sbin /usr/X11R6/bin /usr/local/bin /usr/local/sbin:\
+	:umask=022:\
+	:datasize-max=1536M:\
+	:datasize-cur=1536M:\
+	:maxproc-max=256:\
+	:maxproc-cur=128:\
+	:openfiles-max=1024:\
+	:openfiles-cur=512:\
+	:stacksize-cur=4M:\
+	:localcipher=blowfish,a:\
+	:tc=auth-defaults:\
+	:tc=auth-ftp-defaults:
+
+#
+# Settings used by /etc/rc and root
+# This must be set properly for daemons started as root by inetd as well.
+# Be sure to reset these values to system defaults in the default class!
+#
+daemon:\
+	:ignorenologin:\
+	:datasize=4096M:\
+	:maxproc=infinity:\
+	:openfiles-max=1024:\
+	:openfiles-cur=128:\
+	:stacksize-cur=8M:\
+	:tc=default:
+
+#
+# Staff have fewer restrictions and can login even when nologins are set.
+#
+staff:\
+        :setenv=LANG=en_GB.UTF-8,LC_CTYPE=en_GB.UTF-8,LC_COLLATE=C:\
+	:datasize-cur=3072M:\
+	:datasize-max=3072M:\
+	:maxproc-max=1024:\
+	:maxproc-cur=512:\
+        :openfiles-cur=32768:\
+        :openfiles-max=65536:\
+        :stacksize-cur=32M:\
+	:ignorenologin:\
+	:requirehome@:\
+	:tc=default:
+
+#
+# Authpf accounts get a special motd and shell
+#
+authpf:\
+	:welcome=/etc/motd.authpf:\
+	:shell=/usr/sbin/authpf:\
+	:tc=default:
+
+#
+# Building LLVM in base requires higher limits
+#
+build:\
+	:datasize-max=1843M:\
+	:datasize-cur=1843M:\
+	:tc=default:
+
+#
+# Building ports with DPB uses raised limits
+#
+pbuild:\
+	:datasize-max=infinity:\
+	:datasize-cur=12G:\
+	:maxproc-max=1024:\
+	:maxproc-cur=512:\
+	:stacksize-cur=8M:\
+	:priority=5:\
+	:tc=default:
+
+#
+# Override resource limits for certain daemons started by rc.d(8)
+#
+bgpd:\
+	:datasize=16384M:\
+	:openfiles=512:\
+	:tc=daemon:
+
+unbound:\
+	:openfiles=512:\
+	:tc=daemon:
+
+vmd:\
+	:datasize=16384M:\
+	:tc=daemon:
+
+xenodm:\
+	:openfiles=512:\
+	:tc=daemon:
+#+END_SRC
+
+**** login.conf tangle
+:PROPERTIES:
+:ORDERED:  t
+:END:
+
+***** root dir
+
+#+NAME: login-root-dir
+#+BEGIN_SRC conf :tangle "/doas::/etc/login.conf" :tangle-mode o644
+<<login>>
+#+END_SRC
+  
+***** current dir
+
+#+NAME: login-current-dir
+#+BEGIN_SRC conf :tangle "etc/login.conf" :tangle-mode o644
+<<login>>
+#+END_SRC
+
+*** pf.conf
+
+#+begin_example
+/etc/pf.conf
+#+end_example
+
+**** pf.conf config
+
+#+NAME: pf.conf
+#+BEGIN_SRC conf
+#	$OpenBSD: pf.conf,v 1.55 2017/12/03 20:40:04 sthen Exp $
+#
+# See pf.conf(5) and /etc/examples/pf.conf
+
+# Macros
+tcp_services = "{ 6881, 22000, 8080 }"
+udp_services = "{ 6882, 22000, 21027 }"
+lan_net      = "192.168.1.0/24"
+
+# Options
+set block-policy drop
+set skip on lo0
+
+# Normalization & Anti-Spoofing
+match in all scrub (no-df)
+antispoof quick for egress
+block in quick on egress from { no-route, urpf-failed } to any
+
+# Protect package builds (OpenBSD default)
+block return out log proto { tcp udp } user _pbuild
+
+# Default rule
+block drop all
+
+# Allow all outbound traffic
+pass out quick inet
+
+# Inbound rules
+pass in on egress proto tcp from $lan_net to egress port ssh
+pass in on egress proto tcp to egress port $tcp_services
+pass in on egress proto udp to egress port $udp_services
+#+END_SRC
+
+**** pf.conf tangle
+:PROPERTIES:
+:ORDERED:  t
+:END:
+
+***** root dir
+
+#+NAME: pf.conf-root-dir
+#+BEGIN_SRC conf :tangle "/doas::/etc/pf.conf" :tangle-mode o600
+<<pf.conf>>
+#+END_SRC
+  
+***** current dir
+
+#+NAME: pf.conf-current-dir
+#+BEGIN_SRC conf :tangle "etc/pf.conf" :tangle-mode o600
+<<pf.conf>>
+#+END_SRC
+
+*** rc.conf.local
+
+#+begin_example
+/etc/rc.conf.local
+#+end_example
+
+**** rc.conf.local config
+
+#+NAME: rc.conf.local
+#+BEGIN_SRC conf
+apmd_flags=-A -z 15
+mpd_flags=/home/djwilcox/.config/mpd/mpd.conf
+mpd_user=djwilcox
+pkg_scripts=seatd messagebus 
+syncthing_user=djwilcox
+#+END_SRC
+
+**** rc.conf.local tangle
+:PROPERTIES:
+:ORDERED:  t
+:END:
+
+***** root dir
+
+#+NAME: rc.conf.local-root-dir
+#+BEGIN_SRC conf :tangle "/doas::/etc/rc.conf.local" :tangle-mode o644
+<<rc.conf.local>>
+#+END_SRC
+  
+***** current dir
+
+#+NAME: rc.conf.local-current-dir
+#+BEGIN_SRC conf :tangle "etc/rc.conf.local" :tangle-mode o644
+<<rc.conf.local>>
+#+END_SRC
+
+
+*** unveil.main
+
+#+begin_example
+/etc/firefox/unveil.main
+#+end_example
+
+**** unveil.main config
+
+#+NAME: unveil.main
+#+BEGIN_SRC conf
+# for uuid generation?
+/dev/urandom r
+/dev/video0 rw
+/dev/video1 rw
+/dev/video2 rw
+/dev/video3 rw
+/dev/fido rw
+# for webgl info in about:support
+/dev/dri rw
+/usr/lib r
+
+/etc/fonts r
+/etc/machine-id r
+
+# normally "pledge dns" exempts this from unveil, but pledge might be disabled
+/etc/resolv.conf r
+/etc/hosts r
+
+/usr/local/lib r
+/usr/local/lib/firefox rx
+/usr/local/share r
+/usr/share/locale r
+/etc/localtime r
+/usr/share/zoneinfo r
+/var/cache/fontconfig r
+/usr/X11R6/lib r
+/usr/X11R6/share r
+/var/run r
+
+# security devices, e.g. OpenSC's PKCS #11 module, may talk to this socket
+/var/run/pcscd/pcscd.comm rw
+
+# printing
+/usr/bin/lpr rx
+/var/run/cups/cups.sock rw
+
+/etc/mailcap r
+~/.mailcap r
+~/.mime.types r
+
+~/.XCompose r
+~/.Xauthority r
+~/.Xdefaults r
+~/.fontconfig r
+~/.fonts r
+~/.fonts.conf r
+~/.fonts.conf.d r
+~/.icons r
+~/.pki rwc
+~/.sndio rwc
+~/.terminfo r
+
+~/.mozilla rwc
+~/downloads rwc
+
+# for at least shm_open (for now)
+/tmp rwc
+
+# $XDG_CACHE_HOME, $XDG_CONFIG_HOME, and $XDG_DATA_HOME will expand to the
+# given variable if it exists in the environment, otherwise defaulting to
+# ~/.cache, ~/.config, and ~/.local/share
+$XDG_RUNTIME_DIR/dconf rwc
+$XDG_CACHE_HOME/at-spi rw
+$XDG_CACHE_HOME/thumbnails rwc
+$XDG_CACHE_HOME/gvfsd r
+$XDG_CACHE_HOME/dconf rwc
+$XDG_CACHE_HOME/mozilla/firefox rwc
+$XDG_CACHE_HOME/mesa_shader_cache rwc
+$XDG_CONFIG_HOME/dconf rw
+$XDG_CONFIG_HOME/fcitx r
+$XDG_CONFIG_HOME/fontconfig r
+$XDG_CONFIG_HOME/gtk-3.0 r
+$XDG_CONFIG_HOME/mimeapps.list r
+$XDG_CONFIG_HOME/mozilla rwc
+$XDG_CONFIG_HOME/user-dirs.dirs r
+$XDG_DATA_HOME/applications rwc
+$XDG_DATA_HOME/applnk r
+$XDG_DATA_HOME/fonts r
+$XDG_DATA_HOME/glib-2.0 r
+$XDG_DATA_HOME/icons r
+$XDG_DATA_HOME/mime r
+$XDG_DATA_HOME/recently-used.xbel rwc
+$XDG_DATA_HOME/themes r
+#+END_SRC
+
+**** unveil.main tangle
+:PROPERTIES:
+:ORDERED:  t
+:END:
+
+***** root dir
+
+#+NAME: unveil.main-root-dir
+#+BEGIN_SRC conf :tangle "/doas::/etc/firefox/unveil.main" :tangle-mode o644
+<<unveil.main>>
+#+END_SRC
+  
+***** current dir
+
+#+NAME: unveil.main-current-dir
+#+BEGIN_SRC conf :tangle "etc/firefox/unveil.main" :tangle-mode o644
+<<unveil.main>>
+#+END_SRC
+
+*** wsconsctl.conf
+
+#+begin_example
+/etc/wsconsctl.conf
+#+end_example
+
+**** wsconsctl.conf config
+
+#+NAME: wsconsctl.conf
+#+BEGIN_SRC conf
+keyboard.encoding=uk
+keyboard.map+="keycode 53 = grave asciitilde plusminus"
+keyboard.map+="keycode 50 = section plusminus"
+keyboard.map+="keycode 100 = section plusminus"
+keyboard.map+="keycode 31 = 2 at twosuperior cent"
+keyboard.map+="keycode 52 = apostrophe quotedbl section Agrave"
+
+keyboard1.encoding=uk
+keyboard1.map+="keycode 53 = grave asciitilde plusminus"
+keyboard1.map+="keycode 50 = section plusminus"
+keyboard1.map+="keycode 100 = section plusminus"
+keyboard1.map+="keycode 31 = 2 at twosuperior cent"
+keyboard1.map+="keycode 52 = apostrophe quotedbl section Agrave"
+
+display.brightness=100%
+#+END_SRC
+
+**** wsconsctl.conf tangle
+:PROPERTIES:
+:ORDERED:  t
+:END:
+
+***** root dir
+
+#+NAME: wsconsctl.conf-root-dir
+#+BEGIN_SRC conf :tangle "/doas::/etc/wsconsctl.conf" :tangle-mode o644
+<<wsconsctl.conf>>
+#+END_SRC
+  
+***** current dir
+
+#+NAME: wsconsctl.conf-current-dir
+#+BEGIN_SRC conf :tangle "etc/wsconsctl.conf" :tangle-mode o644
+<<wsconsctl.conf>>
+#+END_SRC
