@@ -327,6 +327,7 @@ pass in on egress proto udp to egress port $udp_services
 #+NAME: rc.conf.local
 #+BEGIN_SRC conf
 apmd_flags=-A -z 15
+hotplugd_flags=
 mpd_flags=/home/djwilcox/.config/mpd/mpd.conf
 mpd_user=djwilcox
 pkg_scripts=seatd messagebus 
@@ -351,7 +352,6 @@ syncthing_user=djwilcox
 #+BEGIN_SRC conf :tangle "etc/rc.conf.local" :tangle-mode o644
 <<rc.conf.local>>
 #+END_SRC
-
 
 *** unveil.main
 
