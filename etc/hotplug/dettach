@@ -1,0 +1,8 @@
+#!/bin/sh
+dev=$2
+
+case $dev in
+run0|axe0)
+    ifconfig trunk0 -trunkport $dev 2>/dev/null
+    ;;
+esac

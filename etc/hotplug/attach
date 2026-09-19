@@ -1,0 +1,9 @@
+#!/bin/sh
+dev=$2
+
+case $dev in
+run0|axe0)
+    sh /etc/netstart $dev
+    ifconfig trunk0 trunkport $dev
+    ;;
+esac
