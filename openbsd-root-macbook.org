@@ -92,72 +92,6 @@ permit nopass keepenv setenv { PATH } djwilcox
 <<fstab>>
 #+END_SRC
 
-*** hotplug
-**** hotplug config
-***** hotplug-attach config
-
-#+NAME: hotplug-attach
-#+BEGIN_SRC sh
-#!/bin/sh
-dev=$2
-
-case $dev in
-run0|axe0)
-    sh /etc/netstart $dev
-    ifconfig trunk0 trunkport $dev
-    ;;
-esac
-#+END_SRC
-
-***** hotplug-dettach config
-
-#+NAME: hotplug-dettach
-#+BEGIN_SRC sh
-#!/bin/sh
-dev=$2
-
-case $dev in
-run0|axe0)
-    ifconfig trunk0 -trunkport $dev 2>/dev/null
-    ;;
-esac
-#+END_SRC
-
-**** hotplug tangle
-:PROPERTIES:
-:ORDERED:  t
-:END:
-
-***** hotplug-attach
-****** root dir
-
-#+NAME: hotplug-attach-root-dir
-#+BEGIN_SRC conf :tangle "/doas::/etc/hotplug/attach" :tangle-mode o755
-<<hotplug-attach>>
-#+END_SRC
-  
-****** current dir
-
-#+NAME: hotplug-attach-current-dir
-#+BEGIN_SRC conf :tangle "etc/hotplug/attach" :tangle-mode o755
-<<hotplug-attach>>
-#+END_SRC
-
-***** hotplug-dettach
-****** root dir
-
-#+NAME: hotplug-dettach-root-dir
-#+BEGIN_SRC conf :tangle "/doas::/etc/hotplug/dettach" :tangle-mode o755
-<<hotplug-dettach>>
-#+END_SRC
-  
-****** current dir
-
-#+NAME: hotplug-dettach-current-dir
-#+BEGIN_SRC conf :tangle "etc/hotplug/dettach" :tangle-mode o755
-<<hotplug-dettach>>
-#+END_SRC
-
 *** login.conf
 
 #+begin_example
@@ -394,7 +328,6 @@ pass in on $ext_if proto udp to ($ext_if) port $udp_services
 #+NAME: rc.conf.local
 #+BEGIN_SRC conf
 apmd_flags=-A -z 15
-hotplugd_flags=
 mpd_flags=/home/djwilcox/.config/mpd/mpd.conf
 mpd_user=djwilcox
 pkg_scripts=seatd messagebus 

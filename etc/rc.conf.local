@@ -1,5 +1,4 @@
 apmd_flags=-A -z 15
-hotplugd_flags=
 mpd_flags=/home/djwilcox/.config/mpd/mpd.conf
 mpd_user=djwilcox
 pkg_scripts=seatd messagebus 
