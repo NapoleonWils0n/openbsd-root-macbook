@@ -2,4 +2,5 @@ apmd_flags=-A -z 15
 mpd_flags=/home/djwilcox/.config/mpd/mpd.conf
 mpd_user=djwilcox
 pkg_scripts=seatd messagebus 
+sshd_flags=NO
 syncthing_user=djwilcox
