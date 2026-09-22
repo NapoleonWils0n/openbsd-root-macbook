@@ -353,15 +353,15 @@ syncthing_user=djwilcox
 <<rc.conf.local>>
 #+END_SRC
 
-*** unveil.main
+*** firefox/unveil.main
 
 #+begin_example
 /etc/firefox/unveil.main
 #+end_example
 
-**** unveil.main config
+**** firefox/unveil.main config
 
-#+NAME: unveil.main
+#+NAME: firefox-unveil.main
 #+BEGIN_SRC conf
 # for uuid generation?
 /dev/urandom r
@@ -448,23 +448,23 @@ $XDG_DATA_HOME/recently-used.xbel rwc
 $XDG_DATA_HOME/themes r
 #+END_SRC
 
-**** unveil.main tangle
+**** firefox/unveil.main tangle
 :PROPERTIES:
 :ORDERED:  t
 :END:
 
 ***** root dir
 
-#+NAME: unveil.main-root-dir
+#+NAME: firefox-unveil.main-root-dir
 #+BEGIN_SRC conf :tangle "/doas::/etc/firefox/unveil.main" :tangle-mode o644
-<<unveil.main>>
+<<firefox-unveil.main>>
 #+END_SRC
   
 ***** current dir
 
-#+NAME: unveil.main-current-dir
+#+NAME: firefox-unveil.main-current-dir
 #+BEGIN_SRC conf :tangle "etc/firefox/unveil.main" :tangle-mode o644
-<<unveil.main>>
+<<firefox-unveil.main>>
 #+END_SRC
 
 *** wsconsctl.conf
