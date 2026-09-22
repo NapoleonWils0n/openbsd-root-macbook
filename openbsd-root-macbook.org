@@ -29,7 +29,22 @@ emacs --batch -l org --eval '(org-babel-tangle-file "~/git/openbsd/openbsd-root-
 
 #+NAME: doas
 #+BEGIN_SRC conf
+#=========================================================================#
+# doas.conf
+#=========================================================================#
+
+#=========================================================================#
+# permit user
+#=========================================================================#
+
 permit nopass keepenv setenv { PATH } djwilcox
+
+
+#=========================================================================#
+# root as root
+#=========================================================================#
+
+permit nopass keepenv setenv { PATH } root as root
 #+END_SRC
 
 **** doas tangle
@@ -40,14 +55,14 @@ permit nopass keepenv setenv { PATH } djwilcox
 ***** root dir
 
 #+NAME: doas-root-dir
-#+BEGIN_SRC conf :tangle "/doas::/etc/doas" :tangle-mode o600
+#+BEGIN_SRC conf :tangle "/doas::/etc/doas.conf" :tangle-mode o600
 <<doas>>
 #+END_SRC
   
 ***** current dir
 
 #+NAME: doas-current-dir
-#+BEGIN_SRC conf :tangle "etc/doas" :tangle-mode o600
+#+BEGIN_SRC conf :tangle "etc/doas.conf" :tangle-mode o600
 <<doas>>
 #+END_SRC
 
